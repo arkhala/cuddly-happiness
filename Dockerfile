@@ -2,7 +2,6 @@ FROM alpine:3.23
 
 ARG VERSION=experimental-pr15
 
-CMD ["/bin/sh"]
 
 RUN apk add --no-cache ca-certificates curl && \
     curl -fsSL -o /usr/local/bin/conduit "https://github.com/ssmirr/conduit/releases/download/${VERSION}/conduit-linux-amd64" && \
