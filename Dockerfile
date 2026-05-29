@@ -3,6 +3,7 @@ FROM alpine:3.23
 ARG VERSION=release-cli-2.0.0
 
 RUN apk add --no-cache ca-certificates curl openssh && \
+    echo 'rc_need="!dev !net"' >> /etc/rc.conf && \
     curl -fsSL -o /usr/local/bin/conduit "https://github.com/Psiphon-Inc/conduit/releases/download/${VERSION}/conduit-linux-amd64" && \
     chmod +x /usr/local/bin/conduit
 
