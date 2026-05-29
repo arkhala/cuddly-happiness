@@ -6,6 +6,10 @@ RUN apk add --no-cache ca-certificates curl openssh && \
     curl -fsSL -o /usr/local/bin/conduit "https://github.com/Psiphon-Inc/conduit/releases/download/${VERSION}/conduit-linux-amd64" && \
     chmod +x /usr/local/bin/conduit
 
+# Copy and set up auto-join script
+COPY auto-join.sh /usr/local/bin/auto-join
+RUN chmod +x /usr/local/bin/auto-join
+
 # === Minimal SSH Server Setup ===
 RUN ssh-keygen -A && \
     adduser -D -s /bin/sh conduitmon && \
@@ -14,20 +18,6 @@ RUN ssh-keygen -A && \
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
     echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
     echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
-
-# === Clean Auto-Join Script ===
-RUN cat > /usr/local/bin/auto-join << 'EOF'
-#!/bin/sh
-if [ -n "$DASHBOARD_DOMAIN" ] && [ -n "$JOIN_TOKEN" ]; then
-  if [ -z "$RELAY_NAME" ]; then
-    RELAY_NAME="relay-$(head /dev/urandom | tr -dc a-z0-9 | head -c 6)"
-  fi
-  curl -sL "https://$DASHBOARD_DOMAIN/join/$JOIN_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d "{\"name\":\"$RELAY_NAME\"}" | sh
-fi
-EOF
-RUN chmod +x /usr/local/bin/auto-join
 
 ENV DASHBOARD_DOMAIN=""
 ENV JOIN_TOKEN=""
