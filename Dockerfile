@@ -10,22 +10,20 @@ RUN apk add --no-cache ca-certificates curl openssh && \
 COPY auto-join.sh /usr/local/bin/auto-join
 RUN chmod +x /usr/local/bin/auto-join
 
-# === Minimal SSH Server Setup ===
+# === Minimal + Reliable SSH Server Setup (Alpine) ===
 RUN ssh-keygen -A && \
     adduser -D -s /bin/sh conduitmon && \
     mkdir -p /home/conduitmon/.ssh && \
     chmod 700 /home/conduitmon/.ssh && \
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
     echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
-    echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+    echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config && \
+    echo "AllowUsers conduitmon" >> /etc/ssh/sshd_config && \
+    echo "UsePAM no" >> /etc/ssh/sshd_config && \
+    echo "AuthorizedKeysFile .ssh/authorized_keys" >> /etc/ssh/sshd_config
 
 ENV DASHBOARD_DOMAIN=""
 ENV JOIN_TOKEN=""
 
 # Start SSH + run auto-join + start conduit
 ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && /usr/local/bin/auto-join && exec conduit start -b \"${BANDWIDTH:-40}\" -m \"${MAXCLIENTS:-50}\" ${METRICSADDRESS:+--metrics-addr \"${METRICSADDRESS}\"} ${SET:+${SET}}"]
-#ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && exec conduit start -b 40 -m 50"]
-#ENTRYPOINT ["/entrypoint.sh"]
-#COPY entrypoint.sh /entrypoint.sh
-#RUN chmod +x /entrypoint.sh
-#ENTRYPOINT ["/entrypoint.sh"]
