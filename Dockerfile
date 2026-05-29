@@ -5,6 +5,7 @@ ARG VERSION=release-cli-2.0.0
 RUN apk add --no-cache ca-certificates curl openssh && \
     curl -fsSL -o /usr/local/bin/conduit "https://github.com/Psiphon-Inc/conduit/releases/download/${VERSION}/conduit-linux-amd64" && \
     chmod +x /usr/local/bin/conduit && \
+    apk del curl
 
 # === Minimal SSH Server Setup ===
 RUN ssh-keygen -A && \
@@ -26,4 +27,4 @@ ENV DASHBOARD_DOMAIN=""
 ENV JOIN_TOKEN=""
 
 # Start SSH + run auto-join + start conduit
-ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && /usr/local/bin/auto-join && exec conduit start -b \"${BANDWIDTH:-50}\" -m \"${MAXCLIENTS:-100}\" ${METRICSADDRESS:+--metrics-addr \"${METRICSADDRESS}\"} ${SET:+${SET}}"]
+ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && /usr/local/bin/auto-join && exec conduit start -b \"${BANDWIDTH:-40}\" -m \"${MAXCLIENTS:-50}\" ${METRICSADDRESS:+--metrics-addr \"${METRICSADDRESS}\"} ${SET:+${SET}}"]
