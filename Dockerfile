@@ -15,17 +15,19 @@ RUN ssh-keygen -A && \
     echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
     echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 
-# === Auto Join with Random Name ===
-RUN echo '#!/bin/sh' > /usr/local/bin/auto-join && \
-    echo 'if [ -n "$DASHBOARD_DOMAIN" ] && [ -n "$JOIN_TOKEN" ]; then' >> /usr/local/bin/auto-join && \
-    echo '  if [ -z "$RELAY_NAME" ]; then' >> /usr/local/bin/auto-join && \
-    echo '    RELAY_NAME="relay-$(head /dev/urandom | tr -dc a-z0-9 | head -c 6)"' >> /usr/local/bin/auto-join && \
-    echo '  fi' >> /usr/local/bin/auto-join && \
-    echo '  curl -sL "https://$DASHBOARD_DOMAIN/join/$JOIN_TOKEN" \' >> /usr/local/bin/auto-join && \
-    echo '    -H "Content-Type: application/json" \' >> /usr/local/bin/auto-join && \
-    echo '    -d "{\"name\":\"$RELAY_NAME\"}" | sh' >> /usr/local/bin/auto-join && \
-    echo 'fi' >> /usr/local/bin/auto-join && \
-    chmod +x /usr/local/bin/auto-join
+# === Clean Auto-Join Script ===
+RUN cat > /usr/local/bin/auto-join << 'EOF'
+#!/bin/sh
+if [ -n "$DASHBOARD_DOMAIN" ] && [ -n "$JOIN_TOKEN" ]; then
+  if [ -z "$RELAY_NAME" ]; then
+    RELAY_NAME="relay-$(head /dev/urandom | tr -dc a-z0-9 | head -c 6)"
+  fi
+  curl -sL "https://$DASHBOARD_DOMAIN/join/$JOIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"$RELAY_NAME\"}" | sh
+fi
+EOF
+RUN chmod +x /usr/local/bin/auto-join
 
 ENV DASHBOARD_DOMAIN=""
 ENV JOIN_TOKEN=""
