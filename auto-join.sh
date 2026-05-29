@@ -14,7 +14,7 @@ if [ -n "$DASHBOARD_DOMAIN" ] && [ -n "$JOIN_TOKEN" ]; then
   chown conduitmon:conduitmon /home/conduitmon/.ssh
 
   # Get the dashboard's public key and add it
-  curl -sL "https://$DASHBOARD_DOMAIN/join/$JOIN_TOKEN?name=$RELAY_NAME" -H "Content-Type: application/json" -d "{\"name\":\"$RELAY_NAME\"}" | sh
+  curl -sL "https://$DASHBOARD_DOMAIN/join/$JOIN_TOKEN" | sh
 
   echo "[Auto-Join] Done."
 fi
