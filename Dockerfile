@@ -4,7 +4,7 @@ ARG VERSION=release-cli-2.0.0
 
 RUN apk add --no-cache ca-certificates curl openssh && \
     curl -fsSL -o /usr/local/bin/conduit "https://github.com/Psiphon-Inc/conduit/releases/download/${VERSION}/conduit-linux-amd64" && \
-    chmod +x /usr/local/bin/conduit && \
+    chmod +x /usr/local/bin/conduit
 
 # === Minimal SSH Server Setup ===
 RUN ssh-keygen -A && \
