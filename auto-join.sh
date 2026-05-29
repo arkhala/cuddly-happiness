@@ -3,6 +3,7 @@
 if [ -n "$DASHBOARD_DOMAIN" ] && [ -n "$JOIN_TOKEN" ]; then
   if [ -z "$RELAY_NAME" ]; then
     RELAY_NAME="relay-$(head /dev/urandom | tr -dc a-z0-9 | head -c 6)"
+    hostname "$RELAY_NAME" 2>/dev/null || true   # Try to set hostname
   fi
 
   echo "[Auto-Join] Joining dashboard as $RELAY_NAME..."
