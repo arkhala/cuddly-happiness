@@ -23,4 +23,5 @@ ENV DASHBOARD_DOMAIN=""
 ENV JOIN_TOKEN=""
 
 # Start SSH + run auto-join + start conduit
-ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && /usr/local/bin/auto-join && exec conduit start -b \"${BANDWIDTH:-40}\" -m \"${MAXCLIENTS:-50}\" ${METRICSADDRESS:+--metrics-addr \"${METRICSADDRESS}\"} ${SET:+${SET}}"]
+#ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && /usr/local/bin/auto-join && exec conduit start -b \"${BANDWIDTH:-40}\" -m \"${MAXCLIENTS:-50}\" ${METRICSADDRESS:+--metrics-addr \"${METRICSADDRESS}\"} ${SET:+${SET}}"]
+ENTRYPOINT ["/bin/sh", "-c", "/usr/sbin/sshd && exec conduit start -b 40 -m 50"]
